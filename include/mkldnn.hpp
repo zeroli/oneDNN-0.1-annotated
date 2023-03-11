@@ -85,6 +85,9 @@ public:
 };
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
+// 原始的h文件并没有将函数定义在namespace
+// 这里直接将头文件include，然后放在namespace下，我还是第一次见到
+// 这样C++文件引用了当前这个头文件，要访问C-API的话，需要用到：`c_api::`的方式
 namespace c_api {
 #include "mkldnn.h"
 }
@@ -99,6 +102,7 @@ class primitive: public handle<c_api::mkldnn_primitive_t> {
     friend struct error;
     friend struct stream;
     friend class primitive_at;
+    // 引入基类的构造函数
     using handle::handle;
 public:
     /// A wrapper structure to specify a particular output of a primitive.
@@ -255,7 +259,9 @@ private:
 /// mini-batch, channel/feature map, and spatial kind. Intel(R) MKL-DNN uses
 /// this type when a mathematical description of data is required.
 struct tensor {
+    // `dims`其实就是std::vector<uint32_t>
     typedef std::vector<std::remove_extent<c_api::mkldnn_dims_t>::type> dims;
+    // `nd_offset`其实就是std::vector<int32_t>
     typedef std::vector<std::remove_extent<c_api::mkldnn_nd_offset_t>::type> nd_offset;
 
     /// Checks that a vector specifying tensor dimensions is valid.

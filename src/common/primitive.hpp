@@ -53,6 +53,7 @@ public:
         return true;
     }
 
+    // 定义API接口函数：execute
     mkldnn::impl::status_t execute() {
         if (!inputs_ready())
             return mkldnn::impl::status::not_ready;

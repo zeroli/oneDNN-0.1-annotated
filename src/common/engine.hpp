@@ -36,6 +36,7 @@ public:
     virtual bool is_ok() const = 0;
     mkldnn::impl::engine_kind_t kind() const { return _kind; }
 
+    // 定义API接口函数： submit
     virtual mkldnn::impl::status_t submit(size_t n,
             mkldnn::impl::primitive *primitives[],
             mkldnn::impl::primitive **error_primitive) = 0;

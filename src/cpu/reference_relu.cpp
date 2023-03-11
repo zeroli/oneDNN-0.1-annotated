@@ -134,6 +134,9 @@ status_t reference_relu<prec>::primitive_desc_init(
     return success;
 }
 
+// 下面的函数定义了如何创建这个特别版本的primitive
+// 它将会被在descriptor中采用一个VOID*指针描述：
+// rpd.base.implementation = reinterpret_cast<const void*>(&implementation);
 namespace {
 template <impl::precision_t prec>
 status_t create(primitive **aprimitive, const primitive_desc_t *primitive_desc,
@@ -156,7 +159,7 @@ status_t create(primitive **aprimitive, const primitive_desc_t *primitive_desc,
 template <impl::precision_t prec>
 const primitive_impl reference_relu<prec>::implementation = { create<prec> };
 
-template class reference_relu<f32>;
+template class reference_relu<f32>;  // 针对F32类型的实例化
 
 }}}
 

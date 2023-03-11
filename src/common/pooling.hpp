@@ -26,6 +26,7 @@
 
 namespace mkldnn {
 namespace impl {
+// CPU对pooling操作的基本实现
 namespace cpu {
 
 using namespace mkldnn::impl::status;
@@ -53,6 +54,7 @@ protected:
     const impl::pooling_primitive_desc_t &_ppd;
     const bool _is_training;
 
+    // 实现虚接口函数：execute_impl
     virtual status_t execute_impl() {
         switch (_ppd.pooling_desc.prop_kind) {
         case prop_kind::forward_training:

@@ -31,10 +31,14 @@ using namespace mkldnn::impl::precision;
 using namespace mkldnn::impl::prop_kind;
 using namespace mkldnn::impl::primitive_kind;
 
+// 这个`primitive`就是基类：mkldnn_primitive，定义在pritimive.hpp中
+// 在c_types_map.hpp中，它被typedef了mkldnn::impl::primitive
+
+// 这是针对某一个具体CPU优化的子类版本
 template <impl::precision_t prec>
 class reference_relu: public primitive {
 private:
-    const impl::relu_primitive_desc_t &_rpd;
+    const impl::relu_primitive_desc_t &_rpd;  // 引用类型??，存在哪了？TODO
     bool _use_dense;
 
     status_t execute_forward_generic();
@@ -44,6 +48,7 @@ private:
     status_t execute_backward_data();
 
 protected:
+    // 实现primitive基类的虚接口函数
     status_t execute_impl() {
         switch (_rpd.relu_desc.prop_kind) {
         case forward: return execute_forward(); break;

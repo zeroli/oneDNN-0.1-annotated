@@ -91,6 +91,7 @@ private:
 public:
     mkldnn_stream(): _is_lazy(-1) {}
 
+    // 定义2个API接口函数： submit和wait
     status_t submit(size_t n, primitive *primitives[],
             primitive **error_primitive)
     {
