@@ -37,6 +37,7 @@ public:
         , _lazy(lazy) {}
     virtual bool is_lazy() const { return _lazy; }
     virtual bool is_ok() const { return true; }
+    // 实现submit接口
     virtual status_t submit(size_t n, primitive *primitives[],
             primitive **error_primitive) {
         assert(error_primitive);

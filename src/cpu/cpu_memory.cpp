@@ -38,6 +38,7 @@ status_t cpu_memory::memory_desc_init(primitive_desc_t *primitive_desc,
     memory_primitive_desc_t mpd;
     mpd.base.primitive_kind = primitive_kind::memory;
     mpd.base.engine = &aengine;
+    // 运行期多态实现如何创建对应的primitive
     mpd.base.implementation
         = reinterpret_cast<const void*>(&memory_implementation);
     mpd.memory_desc = memory_desc;

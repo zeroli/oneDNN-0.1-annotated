@@ -163,6 +163,7 @@ status_t pooling<pooling_impl>::create(
         const primitive_at_t inputs[], const primitive *outputs[]) {
     assert(primitive_desc->base.primitive_kind == primitive_kind::pooling);
     auto &ppd = primitive_desc->pooling;
+    // 创建一个具体的pooling impl，模板类
     *aprimitive = new pooling_impl(ppd, inputs, outputs);
     return aprimitive ? success : out_of_memory;
 }

@@ -42,6 +42,7 @@ public:
                 == prop_kind::forward_training)
         , _with_bias(!memory_desc_wrapper(_ippd.bias_primitive_desc).is_zero())
     {
+        // 至少2个输入
         for (int i = 0; i < 2 + _with_bias; ++i)
             _input.push_back(inputs[i]);
         _output.push_back(outputs[0]);
@@ -55,6 +56,8 @@ protected:
     const bool _is_training;
     const bool _with_bias;
 
+    // w * x + b
+    // backward有针对3个可变量的求导
     virtual status_t execute_impl() {
         switch (_ippd.inner_product_desc.prop_kind) {
         case prop_kind::forward_training:

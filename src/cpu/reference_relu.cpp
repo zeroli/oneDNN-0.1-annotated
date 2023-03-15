@@ -28,6 +28,7 @@ using namespace mkldnn::impl::precision;
 using namespace mkldnn::impl::memory_format;
 using namespace mkldnn::impl::primitive_kind;
 
+// relu的参考实现
 template <impl::precision_t prec>
 status_t reference_relu<prec>::execute_forward_generic() {
     auto obtain_ptr = [this](uint32_t idx) {
@@ -38,6 +39,7 @@ status_t reference_relu<prec>::execute_forward_generic() {
     const data_t *src = obtain_ptr(0);
     data_t *dst = reinterpret_cast<data_t*>(this->output()[0]->memory());
 
+    // 支持NCHW格式
     const memory_desc_wrapper src_d(this->_rpd.src_primitive_desc.memory_desc);
     const uint32_t N = src_d.dims()[0];
     const uint32_t C = src_d.dims()[1];
@@ -45,6 +47,8 @@ status_t reference_relu<prec>::execute_forward_generic() {
     const uint32_t W = src_d.dims()[3];
     const double negative_slope = this->_rpd.relu_desc.negative_slope;
 
+    // 终于看了庐山真面目了
+    // 采用omp编译并行加速
 #   pragma omp parallel for collapse(4) schedule(static)
     for (uint32_t n = 0; n < N; ++n) {
         for (uint32_t c = 0; c < C; ++c) {
@@ -52,6 +56,7 @@ status_t reference_relu<prec>::execute_forward_generic() {
                 for (uint32_t w = 0; w < W; ++w) {
                     data_t s = src[src_d.off(n, c, h, w)];
                     data_t &d = dst[src_d.off(n, c, h, w)];
+                    // 也支持leaky relu，如果定义非0的slope
                     d = (s > 0) ? s : s * negative_slope; // alpha, beta, etc ?
                 }
             }

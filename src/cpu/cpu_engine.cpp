@@ -45,6 +45,8 @@ namespace {
 using namespace mkldnn::impl::precision;
 using namespace mkldnn::impl::memory_format;
 
+// cpu版本的engine所支持的所有的pritimive？
+// 下面就是它们初始化的方式
 primitive_desc_init_f primitive_inits[] = {
     cpu_memory::memory_desc_init,
     jit_avx2_convolution<f32>::primitive_desc_init,

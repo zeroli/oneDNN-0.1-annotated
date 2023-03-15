@@ -41,9 +41,12 @@ status_t reference_inner_product<prec>::execute_forward() {
             dst_d(this->_ippd.dst_primitive_desc.memory_desc);
 
     const uint32_t MB = src_d.dims()[0];
+    // weight matrix： OC * IC * H * W
+    // output channel#, input channel#
     const uint32_t OC = weights_d.dims()[0];
     const uint32_t IC = weights_d.dims()[1];
 
+    // src_d的channel和weights的channel相同
     const bool src_has_spatial = src_d.ndims() == 4;
     auto ker_has_spatial = [=](data_t *d, uint32_t mb, uint32_t oc) {
         const uint32_t KH = weights_d.dims()[2];

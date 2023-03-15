@@ -27,10 +27,12 @@
 namespace mkldnn {
 namespace impl {
 
+// 精度萃取类，针对不同数据类型获取它的原生数据类型
 template <precision_t> struct prec_trait {};
 template <> struct prec_trait<precision::f32> { typedef float type; };
 template <> struct prec_trait<precision::u32> { typedef uint32_t type; };
 
+// 数据精度萃取类，针对不同原生类型获取它对应的精度类型
 template <typename T> struct data_trait {};
 template <> struct data_trait<float>
 { static constexpr precision_t prec = precision::f32; };

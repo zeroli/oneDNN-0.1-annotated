@@ -32,7 +32,7 @@ class reference_pooling:
 public:
     typedef typename prec_trait<prec>::type data_t;
     typedef uint32_t index_t;
-    using pooling<reference_pooling<prec>>::pooling;
+    using pooling<reference_pooling<prec>>::pooling;  // 引入基类构造函数
 
     static status_t constraint(const pooling_desc_t &pool_d);
 

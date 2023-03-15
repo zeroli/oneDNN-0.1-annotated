@@ -59,6 +59,16 @@ status_t reference_convolution<prec>::execute_forward() {
     const int32_t padH = this->_cpd.convolution_desc.padding[0];
     const int32_t padW = this->_cpd.convolution_desc.padding[1];
 
+    // 用户输入tensor:     MB x IC x IH  x IW
+    // weight的tensor：  OC x IC x KH x KW
+    // weight的个数为OC，每个是一个F * F * IC（深度）
+    // 所以IC必须match用户输入的IC
+    // 每个IH x IW输入图像convole KH x KW kernel，叠加IC个convole的结果
+    // 成为一个IH x IW的输出图像(with padding)，注意是一个
+    // 但是weight有个OC个，故有OC个convole的输出图像
+    // 一个输入图像被OC个kernel提取出特征，形成OC个图像
+    // 现在有MB个输入图像，故有MB x OC x IH x IW输出图像
+    // 从IC => OC是通过OC个filter来完成的，可以认为是OC x IC矩阵变换
     auto ker = [=](data_t *d, uint32_t g, uint32_t mb, uint32_t oc, uint32_t oh,
             uint32_t ow)
     {

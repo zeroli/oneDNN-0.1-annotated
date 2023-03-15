@@ -28,6 +28,7 @@ namespace cpu {
 
 using namespace mkldnn::impl::status;
 
+// CPU针对pooling优化实现execute_forward
 template <impl::precision_t prec>
 status_t reference_pooling<prec>::execute_forward() {
     auto src = reinterpret_cast<const data_t *>(
@@ -53,6 +54,7 @@ status_t reference_pooling<prec>::execute_forward() {
     const int32_t PH = this->_ppd.pooling_desc.padding[0];
     const int32_t PW = this->_ppd.pooling_desc.padding[1];
 
+    // kernel运行，KW * KH区域运行max pooling
     auto ker = [=](data_t *d, uint32_t mb, uint32_t oc, uint32_t oh,
             uint32_t ow)
     {
@@ -67,6 +69,7 @@ status_t reference_pooling<prec>::execute_forward() {
                 const uint32_t ih = oh * SH - PH + kh;
                 const uint32_t iw = ow * SW - PW + kw;
 
+                // max pooling，从这行代码可知
                 if (src[src_d.off(mb, oc, ih, iw)] > d[0]) {
                     d[0] = src[src_d.off(mb, oc, ih, iw)];
                     if (this->_is_training)
@@ -75,7 +78,7 @@ status_t reference_pooling<prec>::execute_forward() {
             }
         }
     };
-
+    // NCHW格式
     const uint32_t MB = src_d.dims()[0];
     const uint32_t OC = dst_d.dims()[1];
     const uint32_t OH = dst_d.dims()[2];
@@ -108,7 +111,7 @@ status_t reference_pooling<prec>::constraint(const pooling_desc_t &pool_d) {
 
 template <impl::precision_t prec>
 const primitive_impl reference_pooling<prec>::implementation = {
-    reference_pooling<prec>::create
+    reference_pooling<prec>::create  // 父类定义
 };
 
 template class reference_pooling<precision::f32>;
