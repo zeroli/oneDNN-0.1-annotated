@@ -51,6 +51,7 @@ static const Operand::Code reg_to_preserve[] = {
 static const Reg64 cdecl_param1(Operand::RCX), cdecl_param2(Operand::RDX),
              cdecl_param3(Operand::R8), cdecl_param4(Operand::R9);
 #else
+// 64bit时，4个寄存器存储函数需要的前4个参数RDI, RSI, RDX, RCX
 static const Reg64 cdecl_param1(Operand::RDI), cdecl_param2(Operand::RSI),
              cdecl_param3(Operand::RDX), cdecl_param4(Operand::RCX);
 #endif
@@ -61,11 +62,13 @@ class jit_generator : public Xbyak::CodeGenerator
 {
 protected:
     Xbyak::Reg64 param1 = cdecl_param1;
+    // 保护一些当前frame正在用的寄存器，caller保存到栈中
     void preamble() {
         const size_t nregs = sizeof(reg_to_preserve)/sizeof(reg_to_preserve[0]);
         for (size_t i = 0; i < nregs; ++i)
             push(Xbyak::Reg64(reg_to_preserve[i]));
     }
+    // 恢复那些寄存器，caller恢复
     void postamble() {
         const size_t nregs = sizeof(reg_to_preserve)/sizeof(reg_to_preserve[0]);
         for (size_t i = 0; i < nregs; ++i)

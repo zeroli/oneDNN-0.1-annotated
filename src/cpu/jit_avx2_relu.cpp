@@ -58,6 +58,7 @@ struct jit_avx2_relu<prec>::xbyak_relu : public jit_generator {
         size_t code_size = 1 * Xbyak::DEFAULT_MAX_CODE_SIZE)
         : jit_generator(code_ptr, code_size)
     {
+        // 整个函数段就是在组装asm代码，最后getCode会一次性生成JIT编译后的可执行代码
         this->preamble();
 
         mov(src, ptr[this->param1 + 0]);
@@ -89,7 +90,7 @@ struct jit_avx2_relu<prec>::xbyak_relu : public jit_generator {
 
         const size_t vector_shift = VECTOR_LENGTH * sizeof(prec);
         if (compile_time_main_loop_iterations != 0) {
-            mov(main_loop_iterator, compile_time_main_loop_iterations); 
+            mov(main_loop_iterator, compile_time_main_loop_iterations);
 
             L(".relu_main_loop");
             for (size_t uf = 0; uf < UNROLLING_FACTOR; uf++) {
@@ -140,6 +141,7 @@ jit_avx2_relu<prec>::jit_avx2_relu(const relu_primitive_desc_t &rpd,
     const size_t jit_reminder = n_reminder_elems -
         reminder_loop_iterations * VECTOR_LENGTH * UNROLLING_FACTOR;
 
+    // ok, 这里就是JIT如何生成代码的关键代码
     typedef void (*kernel_t)(const void *);
     this->jit_relu = new xbyak_relu(&this->jit_negative_slope,
             jit_iterations, 0);
